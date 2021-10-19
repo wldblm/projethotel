@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Timer;
@@ -369,6 +370,7 @@ public class hotelManagment {
 			
 				for (int j = 0; j < customers.length; j++) {
 					if(customers[j] != null && firstName.equalsIgnoreCase(customers[j].getFirstName()) && lastName.equalsIgnoreCase(customers[j].getLastName()) && startDate.equals(startDates[j]) && endDate.equals(endDates[j])) {
+						if(customers[j] != null && firstName.equalsIgnoreCase(customers[j].getFirstName()) && lastName.equalsIgnoreCase(customers[j].getLastName()) && startDate.equals(startDates[j]) && endDate.equals(endDates[j])) {
 						// On demande a l'utilisateur de saisir une nouvelle date de début
 						System.out.println("Veuillez saisir la nouvelle date de debut de reservation");
 						startDate = askDate(in);
@@ -400,7 +402,8 @@ public class hotelManagment {
 		}
 		if(notFound) {
 			System.out.println("Pas de réservation correspondante");
-		}
+		
+		}}
 	}
 	
 	
@@ -772,7 +775,7 @@ public class hotelManagment {
 		}
 	}
 	
-	public void bill(String firstName, String lastName, LocalDate startDate,LocalDate endDate, String price) throws DocumentException, MalformedURLException, IOException {
+	public void bill(String firstName, String lastName, LocalDate startDate,LocalDate endDate,int total, int tab[]) throws DocumentException, MalformedURLException, IOException {
 		Document document  = new Document();
 		PdfWriter.getInstance(document, new FileOutputStream("bill.pdf"));
 		document.open();
@@ -794,7 +797,7 @@ public class hotelManagment {
 		document.add(par2);
 	
 		
-		Paragraph par3 = new Paragraph(new Chunk("Chambre : i                            facture numéro : 1234" , FontFactory.getFont(FontFactory.COURIER, 13)));
+		Paragraph par3 = new Paragraph(new Chunk("                                       facture numéro : 1234" , FontFactory.getFont(FontFactory.COURIER, 13)));
 		document.add(par3);
 		
 		
@@ -809,17 +812,30 @@ public class hotelManagment {
 		table.addCell("Type de chambre ");
 		table.addCell("Prix ");
 		
-		table.addCell("2021 12 01 ");
-		table.addCell("2021 12 12 ");
-		table.addCell("Chambre vue mer ");
-		table.addCell("100 ");
+		
+		// Je recupere le tableau du numéro des chambre réservé
+		for (int i = 0; i < tab.length; i++) {
+			Customer customers[] = hotel[tab[i]].getCustomers();
+			LocalDate startDates[] = hotel[tab[i]].getStartDates();
+			LocalDate endDates[] = hotel[tab[i]].getEndDates();
+				for (int j = 0; j < customers.length; j++) {
+					// si les info de la personne qui a reservé correspondent aux info de la chambre j'affiche dans la facture 
+					if(customers[j] != null && firstName.equals(customers[j].getFirstName()) && lastName.equals(customers[j].getLastName())&& startDate.equals(startDates[j]) && endDate.equals(endDates[j])) {
+						table.addCell(startDate.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)));
+						table.addCell(endDate.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)));
+						table.addCell(hotel[tab[i]].getRoomType());
+						table.addCell(hotel[tab[i]].getPrice());
+					}
+				}
+		}
+		
 		
 		document.add(table);
 		document.add(Chunk.NEWLINE);
 		
-		Paragraph total = new Paragraph(new Chunk("total : 100", FontFactory.getFont(FontFactory.HELVETICA, 13)));
-		total.setAlignment(Paragraph.ALIGN_RIGHT);
-		document.add(total);
+		Paragraph price = new Paragraph(new Chunk("total : " + total , FontFactory.getFont(FontFactory.HELVETICA, 13)));
+		price.setAlignment(Paragraph.ALIGN_RIGHT);
+		document.add(price);
 		document.close();
 	}
 	
