@@ -8,9 +8,20 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.mail.Address;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -23,6 +34,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import hotel.customers.Customer;
 import hotel.rooms.Room;
+import utils.Credentials;
+
 
 public class hotelManagment {
 	
@@ -773,6 +786,30 @@ public class hotelManagment {
 			System.out.println("Mot de passe érroné veuillez ressayer");
 			response = in.next();
 		}
+	}
+	public void mail(String mail) throws MessagingException {
+		Credentials credentials = new Credentials();
+		Properties properties = new Properties();
+		
+		properties.put("mail.smtp.auth", true);
+		properties.put("mail.smtp.host", "smtp.gmail.com");
+		properties.put("mail.smtp.port", 587);
+		properties.put("mail.smtp.starttls.enable", true);
+		properties.put("mail.transport.protocol", "smtp");
+		Session session = Session.getInstance(properties, new Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(credentials.getLogin(), credentials.getPassword());
+			}
+		});
+		
+		Message message = new MimeMessage(session);
+		message.setSubject("Confirmation de réservation");
+		message.setContent("<h1> Votre facture </h1>", "text/html");
+		
+		Address addressTo = new InternetAddress("wldblm@icloud.com");
+		message.setRecipient(Message.RecipientType.TO, addressTo);
+		
+		Transport.send(message);
 	}
 	
 	public void bill(String firstName, String lastName, LocalDate startDate,LocalDate endDate,int total, int tab[]) throws DocumentException, MalformedURLException, IOException {
