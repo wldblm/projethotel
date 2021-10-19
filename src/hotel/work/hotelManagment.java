@@ -4,6 +4,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -74,12 +77,15 @@ public class hotelManagment {
 							lastFreeRoom(in);
 							break;
 						case "F" :
+							login(in);
 							doAReservation(in, userChoice);
 							break;
 						case "G" :
+							login(in);
 							freeAnOccupiedRoom(in, userChoice);
 							break;
 						case "H" :
+							login(in);
 							editReservation(in);
 							break;
 						case "I" :
@@ -148,7 +154,7 @@ public class hotelManagment {
 			for (int j = 0; j < customers.length; j++) {
 				if(customers[j] != null && startDates[j].isBefore(response.plusDays(1)) && endDates[j].isAfter(response.minusDays(1))) {
 					isFree = false;
-					System.out.println("La chambre " + i + " de type " + hotel[i].getRoomType() + " est occupé par " + customers[j].getFirstName() + " " + customers[j].getLastName() + " du " + startDates[j] + " au " + endDates[j]);
+					System.out.println("La chambre " + i + " de type " + hotel[i].getRoomType() + " est occupé par " + customers[j].getFirstName() + " " + customers[j].getLastName() + " du " + startDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)));
 				}
 				
 			}
@@ -328,7 +334,7 @@ public class hotelManagment {
 						startDates[j] = null;
 						endDates[j] = null;
 						notFound = false;
-						System.out.println("La réservation de Monsieur " + lastName + " " + firstName + " du " +  startDate  + " au " + endDate + " à bien été supprimée.");
+						System.out.println("La réservation de " + lastName + " " + firstName + " du " +  startDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE))  + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " à bien été supprimée.");
 						break;
 					}
 				}
@@ -384,7 +390,7 @@ public class hotelManagment {
 						}
 						endDates[j] = endDate;
 						notFound = false;
-						System.out.println("La réservation de Monsieur  " + lastName + " " + firstName + " à bien été modifié du " +  startDates[j]  + " au " + endDates[j]);
+						System.out.println("La réservation de   " + lastName + " " + firstName + " à bien été modifié du " +  startDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE))  + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)));
 						break;
 					}
 				}
@@ -591,7 +597,6 @@ public class hotelManagment {
 		boolean notFound = true;
 		String confirmation = "";
 		System.out.println(" ");
-		login(in);
 		System.out.println(" ");
 		System.out.println("Entrer le loggin du client");
 		System.out.println(" ");
@@ -607,7 +612,7 @@ public class hotelManagment {
 						System.out.println(" ");
 						System.out.println(customers[j].getFirstName() + " " + customers[j].getLastName() + " a " + reservationLeft + " réservation(s).");
 						System.out.println(" ");
-						System.out.println("Ce client a réservé une chambre du " + startDates[j] + " au " + endDates[j]);
+						System.out.println("Ce client a réservé une chambre du " + startDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)));
 						System.out.println(" ");
 						System.out.println("Confirmer le checkout de cette chambre :");
 						System.out.println("('C' pour confirmer le checkout, 'N' pour passer directement à la chambre suivante, 'Q' pour annuler le checkout.)");
@@ -701,11 +706,11 @@ public class hotelManagment {
 					clientFound = true;
 					if(userResaCount == 0) {
 						System.out.println("Bienvenue " + customers[l].getFirstName() + " " + customers[l].getLastName() +  ".");
-						System.out.println("Vous avez réservé la chambre : " + hotel[k].getRoomType() + " au num�ro " + k + ". Vos dates de réservation pour ce bien vont du " + startDates[l] + " au " + endDates[l] + ".");
+						System.out.println("Vous avez réservé la chambre : " + hotel[k].getRoomType() + " au num�ro " + k + ". Vos dates de réservation pour ce bien vont du " + startDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + ".");
 						userResaCount++;
 					}
 					else {
-						System.out.println("Vous avez aussi réservé la chambre : " + hotel[k].getRoomType() + " au numéro " + k + ". Vos dates de réservation pour ce bien vont du " + startDates[l] + " au " + endDates[l] + ".");
+						System.out.println("Vous avez aussi réservé la chambre : " + hotel[k].getRoomType() + " au numéro " + k + ". Vos dates de réservation pour ce bien vont du " + startDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + ".");
 					}
 				}
 				else {
@@ -739,7 +744,7 @@ public class hotelManagment {
 					clientFound = true;
 					if(userResaCount == 0) {
 						System.out.println(customers[l].getFirstName() + " " + customers[l].getLastName() +  ". Identifiant client : " + customers[l].getLogin());
-						System.out.println("Les dates de réservation pour ce bien vont du " + startDates[l] + " au " + endDates[l] + ".");
+						System.out.println("Les dates de réservation pour ce bien vont du " + startDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + ".");
 						System.out.println("Voici la liste des chambres qu'il a réservé :");
 						System.out.println(hotel[k].getRoomType() + " au numéro " + k + ".");
 						userResaCount++;
@@ -767,31 +772,54 @@ public class hotelManagment {
 		}
 	}
 	
-	public void bill(String firstName, String lastName,String roomType, LocalDate startDate,LocalDate endDate, String price) throws DocumentException, MalformedURLException, IOException {
+	public void bill(String firstName, String lastName, LocalDate startDate,LocalDate endDate, String price) throws DocumentException, MalformedURLException, IOException {
 		Document document  = new Document();
-		PdfWriter.getInstance(document, new FileOutputStream("helloworld.pdf"));
+		PdfWriter.getInstance(document, new FileOutputStream("bill.pdf"));
 		document.open();
 		
-		Paragraph titre = new Paragraph(new Chunk("Votre reservation" , FontFactory.getFont(FontFactory.COURIER_BOLD, 20)));
-		titre.setAlignment(com.itextpdf.text.Element.ALIGN_MIDDLE);
+		Paragraph titre = new Paragraph(new Chunk("Hotel WalAmy" , FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20)));
+		titre.setAlignment(Paragraph.ALIGN_CENTER);
 		document.add(titre);
 		document.add(Chunk.NEWLINE);
 		
-		Paragraph par = new Paragraph(new Chunk("Contenu" , FontFactory.getFont(FontFactory.COURIER_BOLD, 10)));
-		par.setAlignment(com.itextpdf.text.Element.ALIGN_MIDDLE);
+		Paragraph par = new Paragraph(new Chunk("Facture" , FontFactory.getFont(FontFactory.COURIER, 13)));
 		document.add(par);
+		
+		
+		Paragraph par1 = new Paragraph(new Chunk("Séjour du : date d'arrivé" , FontFactory.getFont(FontFactory.COURIER, 13)));
+		document.add(par1);
+		
+		
+		Paragraph par2 = new Paragraph(new Chunk("au : date de fin" , FontFactory.getFont(FontFactory.COURIER, 13)));
+		document.add(par2);
+	
+		
+		Paragraph par3 = new Paragraph(new Chunk("Chambre : i                            facture numéro : 1234" , FontFactory.getFont(FontFactory.COURIER, 13)));
+		document.add(par3);
+		
+		
+		Paragraph par4 = new Paragraph(new Chunk("Nom Prénom                             Editée le : date.now" , FontFactory.getFont(FontFactory.COURIER, 13)));
+		document.add(par4);
 		document.add(Chunk.NEWLINE);
 		
-		PdfPTable table = new PdfPTable(8);
 		
-		for (int i = 0; i < 17; i++) {
-			table.addCell("Case " + i);
-		}
+		PdfPTable table = new PdfPTable(4);
+		table.addCell("Début du séjour");
+		table.addCell("Fin du séjour ");
+		table.addCell("Type de chambre ");
+		table.addCell("Prix ");
+		
+		table.addCell("2021 12 01 ");
+		table.addCell("2021 12 12 ");
+		table.addCell("Chambre vue mer ");
+		table.addCell("100 ");
+		
 		document.add(table);
 		document.add(Chunk.NEWLINE);
-		String imgLink = "/Users/waldon/Downloads/haise.jpg"; 
-		Image img = Image.getInstance(imgLink);
-		document.add(img);
+		
+		Paragraph total = new Paragraph(new Chunk("total : 100", FontFactory.getFont(FontFactory.HELVETICA, 13)));
+		total.setAlignment(Paragraph.ALIGN_RIGHT);
+		document.add(total);
 		document.close();
 	}
 	
