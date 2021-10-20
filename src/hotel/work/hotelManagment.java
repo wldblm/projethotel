@@ -591,7 +591,6 @@ public class hotelManagment {
 				System.out.println("Il reste " + bedroomCount + " chambre(s) à réserver.");
 				System.out.println(" ");
 			}
-			System.out.println("bedroomCount = " + bedroomCount);
 			System.out.println("Voici les chambres encore disponibles à cette date :");
 			allAvailableRoomsToReserve(resaStart, resaEnd);
 			System.out.println(" ");
