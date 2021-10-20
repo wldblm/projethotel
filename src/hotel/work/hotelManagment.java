@@ -634,7 +634,7 @@ public class hotelManagment {
 			System.out.println(hotel[reservationBedrooms[i]].getRoomType() + " numéro " + reservationBedrooms[i] + ". Pour un prix de : " + hotel[reservationBedrooms[i]].getPrice() + "€.");
 			total = total + Integer.parseInt(hotel[reservationBedrooms[i]].getPrice());
 		}
-		bill(firstName, lastName, resaStart, resaEnd, total, reservationBedrooms);
+		bill(firstName, lastName, resaStart, resaEnd, total, reservationBedrooms, login);
 		System.out.println("Le reste à payer de " + total + ".");
 		System.out.println(" ");
 		System.out.println("Veuillez saisir votre mail pour recevoir votre facture par email");
@@ -867,17 +867,17 @@ public class hotelManagment {
 
 	}
 	
-	public void bill(String firstName, String lastName, LocalDate startDate,LocalDate endDate,int total, int tab[]) throws DocumentException, MalformedURLException, IOException {
+	public void bill(String firstName, String lastName, LocalDate startDate,LocalDate endDate,int total, int tab[], String login) throws DocumentException, MalformedURLException, IOException {
 		Document document  = new Document();
 		PdfWriter.getInstance(document, new FileOutputStream("factureHotel.pdf"));
 		document.open();
 		
-		Paragraph titre = new Paragraph(new Chunk("Hotel WalAmy" , FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20)));
+		Paragraph titre = new Paragraph(new Chunk("Wamy hotels" , FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20)));
 		titre.setAlignment(Paragraph.ALIGN_CENTER);
 		document.add(titre);
 		document.add(Chunk.NEWLINE);
 		
-		Paragraph par = new Paragraph(new Chunk("Facture" , FontFactory.getFont(FontFactory.COURIER, 13)));
+		Paragraph par = new Paragraph(new Chunk(lastName + " " + firstName  , FontFactory.getFont(FontFactory.COURIER, 13)));
 		document.add(par);
 		
 		
@@ -885,15 +885,15 @@ public class hotelManagment {
 		document.add(par1);
 		
 		
-		Paragraph par2 = new Paragraph(new Chunk("au : date de fin " + endDate , FontFactory.getFont(FontFactory.COURIER, 13)));
+		Paragraph par2 = new Paragraph(new Chunk("au : " + endDate , FontFactory.getFont(FontFactory.COURIER, 13)));
 		document.add(par2);
 	
 		
-		Paragraph par3 = new Paragraph(new Chunk("                                       Facture numéro : 1234" , FontFactory.getFont(FontFactory.COURIER, 13)));
+		Paragraph par3 = new Paragraph(new Chunk("                                       Facture numéro : " + login.substring(5, 9) + lastName.substring(firstName.length(), lastName.length()/2)  , FontFactory.getFont(FontFactory.COURIER, 13)));
 		document.add(par3);
 		
 		
-		Paragraph par4 = new Paragraph(new Chunk(lastName + " " + firstName + "                             Editée le : " + LocalDate.now().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) , FontFactory.getFont(FontFactory.COURIER, 13)));
+		Paragraph par4 = new Paragraph(new Chunk("                             Editée le : " + LocalDate.now().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) , FontFactory.getFont(FontFactory.COURIER, 13)));
 		document.add(par4);
 		document.add(Chunk.NEWLINE);
 		
