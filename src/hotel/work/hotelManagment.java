@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
@@ -380,16 +381,26 @@ public class hotelManagment {
 		System.out.println("Veuillez saisir la date de fin de la réservation que vous souhaitez modifier");
 		LocalDate endDate = askDate(in);
 		
+		System.out.println("Veuillez saisir le numéro de la chambre");
+		int i = in.nextInt();
+		
 		boolean notFound = true;
 		
-		for (int i = 0; i < hotel.length; i++) {
+		
 			Customer customers[] = hotel[i].getCustomers();
 			LocalDate startDates[] = hotel[i].getStartDates();
 			LocalDate endDates[] = hotel[i].getEndDates();
+			int diff = 0;
+			int diff2 = 0;
+			int price = 0;
 			
 				for (int j = 0; j < customers.length; j++) {
 					if(customers[j] != null && firstName.equalsIgnoreCase(customers[j].getFirstName()) && lastName.equalsIgnoreCase(customers[j].getLastName()) && startDate.equals(startDates[j]) && endDate.equals(endDates[j])) {
-						if(customers[j] != null && firstName.equalsIgnoreCase(customers[j].getFirstName()) && lastName.equalsIgnoreCase(customers[j].getLastName()) && startDate.equals(startDates[j]) && endDate.equals(endDates[j])) {
+						
+						notFound = false;
+						// On calcule la difference entre les date actuel	
+						diff = Period.between(startDate, endDate).getDays();
+						
 						// On demande a l'utilisateur de saisir une nouvelle date de début
 						System.out.println("Veuillez saisir la nouvelle date de debut de reservation");
 						startDate = askDate(in);
@@ -399,30 +410,68 @@ public class hotelManagment {
 							System.out.println("La date de début est inferieur a la date du jour veuillez saisir une autre date");
 							startDate = askDate(in);
 						}
-						startDates[j] = startDate;
-
+						
 						// On demande a l'utilisateur de saisir une nouvelle date de fin
 						System.out.println("Veuillez saisir la nouvelle date de fin de reservation");
-						
+						endDate = askDate(in);
 						// Tant que la date de début est inferieur a la date du debut on demande une nouvelle date
 						while(endDate.isBefore(startDate)) {
 							System.out.println("La date de fin est inferieur a la date du début du séjour veuillez saisir une autre date de fin" );
 							endDate = askDate(in);
 						}
+						
+						for(int k = 0; k < startDates.length; k++) {
+							System.out.println(j);
+							System.out.println(k);
+							if(customers[k] == null || j == k) {
+								//System.out.println("customers " + k +" est null");
+							}
+							else if(( startDate.isAfter(startDates[k]) && startDate.isBefore(endDates[k]) ) || ( endDate.isAfter(startDates[k]) && endDate.isBefore(endDates[k]))) {
+								System.out.println(startDates[k]);
+								System.out.println(endDates[k]);
+								System.out.println("Pas de reservation disponible a cette date veuillez saisir d'autres dates" );
+								
+								System.out.println("Nouvelle date de début de reservationn");
+								startDate = askDate(in);
+								
+								System.out.println("Nouvelle date de fin de réservation");
+								endDate = askDate(in);
+								k = 0;
+							}
+							
+						}
+						
+						startDates[j] = startDate;
 						endDates[j] = endDate;
-						notFound = false;
-						System.out.println("La réservation de   " + lastName + " " + firstName + " à bien été modifié du " +  startDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE))  + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)));
-						break;
-					}
+					
+						diff2 = Period.between(startDate, endDate).getDays();
+						
+						if(diff2 < diff) {
+							diff = diff - diff2;
+							price = diff*Integer.parseInt(hotel[i].getPrice());
+							System.out.println("La réservation de   " + lastName + " " + firstName + " à bien été modifié du " +  startDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE))  + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " la somme à rembourser est de " + price);
+							break;
+						}
+						
+						if(diff < diff2) {
+							diff = diff2 - diff;
+							price = diff*Integer.parseInt(hotel[i].getPrice());
+							System.out.println("La réservation de   " + lastName + " " + firstName + " à bien été modifié du " +  startDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE))  + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " la somme à règler est de " + price);
+							break;
+						}
+						else {
+							System.out.println("La réservation de   " + lastName + " " + firstName + " à bien été modifié du " +  startDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE))  + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)));
+							break;
+						}
+						
+					
 				}
-				if(!notFound) {
-					break;
-				}
+				
 		}
 		if(notFound) {
 			System.out.println("Pas de réservation correspondante");
 		
-		}}
+		}
 	}
 		
 	public LocalDate askDate(Scanner in) {
@@ -630,8 +679,8 @@ public class hotelManagment {
 		System.out.println("Réservation effectuée pour la(les) chambre(s) :");
 		int total = 0;
 		for (int i = 0; i < reservationBedrooms.length; i++) {
-			System.out.println(hotel[reservationBedrooms[i]].getRoomType() + " numéro " + reservationBedrooms[i] + ". Pour un prix de : " + hotel[reservationBedrooms[i]].getPrice() + "€.");
-			total = total + Integer.parseInt(hotel[reservationBedrooms[i]].getPrice());
+			System.out.println(hotel[reservationBedrooms[i]].getRoomType() + " numéro " + reservationBedrooms[i] + ". Pour un prix de : " + hotel[reservationBedrooms[i]].getPrice() + "€ pour " + Period.between(resaStart, resaEnd).getDays() + " nuits.");
+			total = total + Integer.parseInt(hotel[reservationBedrooms[i]].getPrice()) * Period.between(resaStart, resaEnd).getDays();
 		}
 		bill(firstName, lastName, resaStart, resaEnd, total, reservationBedrooms, login);
 		System.out.println("Le reste à payer de " + total + ".");
@@ -888,7 +937,7 @@ public class hotelManagment {
 		document.add(par2);
 	
 		
-		Paragraph par3 = new Paragraph(new Chunk("                                       Facture numéro : " + login.substring(5, 9) + lastName.substring(firstName.length(), lastName.length()/2)  , FontFactory.getFont(FontFactory.COURIER, 13)));
+		Paragraph par3 = new Paragraph(new Chunk("                                       Facture numéro : " + lastName.substring(0, 2) + login.substring(5, 9) + lastName , FontFactory.getFont(FontFactory.COURIER, 13)));
 		document.add(par3);
 		
 		
