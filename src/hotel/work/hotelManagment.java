@@ -6,7 +6,6 @@ import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Scanner;
@@ -16,7 +15,6 @@ import java.util.TimerTask;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.Address;
 import javax.mail.Authenticator;
 import javax.mail.BodyPart;
 import javax.mail.Message;
@@ -34,7 +32,6 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -495,39 +492,49 @@ public class hotelManagment {
 		return fARBTIndex;
 	}
 	
-	public void allAvailableRoomsToReserve(LocalDate currentDate, LocalDate resaStart, LocalDate resaEnd) {
+	public void allAvailableRoomsToReserve(LocalDate resaStart, LocalDate resaEnd) {
+		// On recupère la date à laquelle on veut afficher les chambres libre;
+		boolean allOccupied = true;
 		int count = 0;
-		// Compteur du nombre de créneaux ok pour le client par chambre.
-		// Pour que la chambre puisse être réservée, tous les crénaux doivent être validée
-		// le compteur doit être à 3.
+		boolean free = true;
+		
+		for (int i = 0; i < hotel.length; i++) {
+			Customer customers[] = hotel[i].getCustomers();
+			LocalDate startDates[] = hotel[i].getStartDates();
+			LocalDate endDates[] = hotel[i].getEndDates();
+			free = true;
+			for (int j = 0; j < customers.length; j++) {
 
-		if(currentDate.isBefore(resaStart)) { // Si la date est après la date actuelle...
-			for (int i = 0; i < hotel.length; i++) {
-				Customer customers[] = hotel[i].getCustomers();
-				LocalDate startDates[] = hotel[i].getStartDates();
-				LocalDate endDates[] = hotel[i].getEndDates();
-				count = 0;
-				for (int j = 0; j < customers.length; j++) {
-					if(customers[j] == null) {
-						count++;
-					}
-					if((customers[j] != null) && ((endDates[j].isBefore(resaStart)) || (startDates[j].isAfter(resaEnd)))) {
-						count++;
-					}
-					if(count == 3) {
-						System.out.println("Chambre " + i + " de type " + hotel[i].getRoomType());
-						count = 0;
-					} else if ((i == hotel.length-1) && (j == customers.length-1) && (count < 3)) {
-						System.out.println("Toutes les chambres sont actuellement occupées.");
-					}
+				// Si on rentre dans cette condition c'est que la chambre est occupée
+				if((customers[j] != null) && ((endDates[j].isBefore(resaStart)) || (startDates[j].isAfter(resaEnd)))) {
+					free = false;		
+					break;
 				}
 			}
-		} else {
-			System.out.println("Veuillez donner une date ulterieur à celle d'aujourd'hui.");
+			
+			// Si on a bouclé sur les 3 clients et que la chambre n'est pas occupée alors on incremente count
+			if(free) {
+				allOccupied = false;
+				count ++;
+				if(i == hotel.length-1) {
+					System.out.println(count + " chambres libre de type " + hotel[i].getRoomType());
+					break;
+				}
+				// Si la chambre d'apres n'est pas du meme type on afficher le nombre de chambre libre du type actuel et on remet le compteur a 0
+				else if(!hotel[i].getRoomType().equals(hotel[i+1].getRoomType())) {
+					System.out.println(count + " chambres libre de type " + hotel[i].getRoomType());
+					count = 0;
+				}
+			}
+		}
+		
+		if(allOccupied) {
+			System.out.println("Toutes les chambres sont occupées pour ces dates");
 		}
 	}
 
 	public void doAReservation(Scanner in, String userChoice) throws MalformedURLException, DocumentException, IOException, MessagingException {
+
 		LocalDate currentDate = LocalDate.now(); // date d'aujourd'hui
 		System.out.println("Date du début de la réservation :");
 		LocalDate resaStart = askDate(in);
@@ -543,10 +550,9 @@ public class hotelManagment {
 			System.out.println("Date de fin de la réservation :");
 			resaEnd = askDate(in);
 		}
-
 		System.out.println("Recherche de toutes les chambres libres à cette date :");
-		allAvailableRoomsToReserve(resaStart, resaEnd, currentDate);
-
+		allAvailableRoomsToReserve(resaStart, resaEnd);
+		System.out.println(" ");
 		System.out.println("Nombre d'adultes ?");
 		int adultBeds = in.nextInt();
 		System.out.println("Nombre d'enfants ?");
@@ -587,7 +593,7 @@ public class hotelManagment {
 			}
 			System.out.println("bedroomCount = " + bedroomCount);
 			System.out.println("Voici les chambres encore disponibles à cette date :");
-			allAvailableRoomsToReserve(resaStart, resaEnd, currentDate);
+			allAvailableRoomsToReserve(resaStart, resaEnd);
 			System.out.println(" ");
 			System.out.println("Choisir le type de chambre :");
 			System.out.println("-------------------------------");
@@ -638,7 +644,6 @@ public class hotelManagment {
 		System.out.println(" ");
 	}
 
-	
 	public void freeAnOccupiedRoom(Scanner in, String userChoice) {
 		boolean notFound = true; // De base le client n'est pas trouvé
 		String confirmation = "";
