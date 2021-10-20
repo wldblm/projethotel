@@ -168,7 +168,7 @@ public class hotelManagment {
 			for (int j = 0; j < customers.length; j++) {
 				if(customers[j] != null && startDates[j].isBefore(response.plusDays(1)) && endDates[j].isAfter(response.minusDays(1))) {
 					isFree = false;
-					System.out.println("La chambre " + i + " de type " + hotel[i].getRoomType() + " est occupé par " + customers[j].getFirstName() + " " + customers[j].getLastName() + " du " + startDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)));
+					System.out.println("La chambre " + i + " de type " + hotel[i].getRoomType() + " est occupé par " + customers[j].getFirstName() + " " + customers[j].getLastName() + " du " + startDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)));
 				}
 				
 			}
@@ -178,7 +178,7 @@ public class hotelManagment {
 			}
 		}
 	}
-	
+
 	public void getOccupiedRooms(Scanner in) {
 		// On recupère la date à laquelle on veut afficher les chambres occupée;
 		LocalDate response = askDate(in);	
@@ -452,7 +452,7 @@ public class hotelManagment {
 				selection = "2";
 			} else if (hotel[i].getRoomType().equals("Chambre Vue Océan")) {
 				selection = "3";
-			} else if (hotel[i].getRoomType().equals("Chambre Vue imprenable sur l'océan")) {
+			} else if (hotel[i].getRoomType().equals("Chambre vue imprenable sur l'océan")) {
 				selection = "4";
 			} else if (hotel[i].getRoomType().equals("Suite CDA")) {
 				selection = "5";
@@ -520,14 +520,14 @@ public class hotelManagment {
 	}
 
 	public void doAReservation(Scanner in, String userChoice) {
-		login(in);
 		
 		LocalDate currentDate = LocalDate.now(); // date d'aujourd'hui
 		System.out.println("Date du début de la réservation :");
 		LocalDate resaStart = askDate(in);
 		System.out.println("Date de fin de la réservation :");
 		LocalDate resaEnd = askDate(in);
-		while((resaEnd.isBefore(resaStart)) || (resaStart.isBefore(currentDate)) || (resaEnd.isBefore(currentDate))) {
+		// vérifie que le début de la résa n'est pas après la date de fin et le tout n'est pas avant aujourd'hui.
+		while((resaEnd.isBefore(resaStart)) || (resaStart.isBefore(currentDate)) || (resaEnd.isBefore(currentDate))) { 
 			System.out.println("Veuillez entrer une date de fin de réservation ultérieur à celle de début et à la date d'aujourd'hui.");
 			System.out.println("Date du début de la réservation :");
 			resaStart = askDate(in);
@@ -542,19 +542,21 @@ public class hotelManagment {
 		int adultBeds = in.nextInt();
 		System.out.println("Nombre d'enfants ?");
 		int childBeds = in.nextInt();
-		int bedroomCount = 0;
-		if((adultBeds > 2) || (childBeds > 2)) {
+		int bedroomCount = 0; // initialisation du nombre de chambre à réserver.
+		if((adultBeds > 2) || (childBeds > 2)) { // si le nombre d'adulte ou d'enfant est > à 2, il faudra réserver + de chambres :
 			System.out.println("Les clients sont trop nombreux pour la capacité de la chambre.");
-			if(adultBeds % 2 != 0) { adultBeds = adultBeds+1; }
-			if(childBeds % 2 != 0) { childBeds = childBeds+1; }
-			if(((adultBeds/2) > (childBeds/2)) || ((adultBeds/2) == (childBeds/2))) {
-				bedroomCount = (adultBeds/2);
+			// arrondir au chiffre suppérieur
+			if(adultBeds % 2 != 0) { adultBeds = adultBeds+1; } // si en divisant le nombre d'adulte par 2, il reste plus de 0. On ajoute 1 au nombre.
+			if(childBeds % 2 != 0) { childBeds = childBeds+1; } // si en divisant le nombre d'enfant par 2, il reste plus de 0. On ajoute 1 au nombr.
+			if(((adultBeds/2) > (childBeds/2)) || ((adultBeds/2) == (childBeds/2))) { // Si le nb d'adulte/2 est > que le nb d'enfant/2 ou s'ils ont le même nb:
+				bedroomCount = (adultBeds/2); // Le nombre de chambre restante est égale au nombre d'adulte/2
 			} else {
-				bedroomCount = (childBeds/2);
+				bedroomCount = (childBeds/2); // Le nombre de chambre restante est égale au nombre d'enfant/2
 			}
-			System.out.println("Ils devront réserver " + (bedroomCount-1) + " chambre(s) supplémentaire(s).");
+			System.out.println("Ils devront réserver " + (bedroomCount-1) + " chambre(s) supplémentaire(s)."); // nb de chambre supplémentaire est égal au nb de chambre -1.
+		} else {
+			bedroomCount = 1;
 		}
-		int fARBTIndex = 0;
 		System.out.println("Montrer au client la carte des types de chambre en lui indiquant celles qui seront diponible à la date qu'il souhaite.");
 		System.out.println("Nom du client");
 		String lastName = in.next();
@@ -562,7 +564,10 @@ public class hotelManagment {
 		String firstName = in.next();
 		System.out.println("Pour quitter la réservation appuyer sur 'Q'.");
 		System.out.println(" ");
-		do {
+		int fARBTIndex = 0; // initialisation de l'index de la première chambre libre par type.
+		int rBedroomsIndex = 0;
+		int reservationBedrooms[] = new int[bedroomCount]; // initialisation du tableau qui va stocker les chambres de la réservation.
+		do { // permet de rentrer au moins 1 fois dans le menu
 			if (userChoice.toUpperCase().charAt(0) == 'Q') {
 				System.out.println("La réservation a été annulée.");
 				break;
@@ -571,6 +576,7 @@ public class hotelManagment {
 				System.out.println("Il reste " + bedroomCount + " chambre(s) à réserver.");
 				System.out.println(" ");
 			}
+			System.out.println("bedroomCount = " + bedroomCount);
 			System.out.println("Voici les chambres encore disponibles à cette date :");
 			allAvailableRoomsToReserve(resaStart, resaEnd, currentDate);
 			System.out.println(" ");
@@ -587,6 +593,7 @@ public class hotelManagment {
 			System.out.println("-------------------------------");
 			userChoice = in.next();
 			fARBTIndex = firstAvailableRoomByType(in, currentDate, resaStart, resaEnd, userChoice); // Index de la 1ere chambre libre par type
+			System.out.println("fARBTIndex = " + fARBTIndex);
 			Customer fARBTCustomers[] = hotel[fARBTIndex].getCustomers(); // initialisation d'un nouveau client
 			LocalDate fARBTStartingDate[] = hotel[fARBTIndex].getStartDates(); // initialisation d'un nouveau début de date de résa 
 			LocalDate fARBTEndingDate[] = hotel[fARBTIndex].getEndDates(); // initialisation d'une nouvelle fin de date se résa
@@ -598,74 +605,84 @@ public class hotelManagment {
 					break;
 				}
 			}
+			reservationBedrooms[rBedroomsIndex] = fARBTIndex;
 			bedroomCount--;
-		} while (bedroomCount > 0);
+			rBedroomsIndex++;
+		} while (bedroomCount > 0); // sort du while si il n'y a plus de chambre à réserver.
 		System.out.println(" ");
 		System.out.println("Réservation effectuée avec succés.");
 		System.out.println(" ");
-		getClientByNames(firstName, lastName);
+		System.out.println(lastName + " " + firstName);
+		System.out.println("Réservation effectuée pour la(les) chambre(s) :");
+		int total = 0;
+		for (int i = 0; i < reservationBedrooms.length; i++) {
+			System.out.println(hotel[reservationBedrooms[i]].getRoomType() + " numéro " + reservationBedrooms[i] + ". Pour un prix de : " + hotel[reservationBedrooms[i]].getPrice() + "€.");
+			total = total + Integer.parseInt(hotel[reservationBedrooms[i]].getPrice());
+		}
+		System.out.println("Le reste à payer de " + total + ".");
 		System.out.println(" ");
 		System.out.println("Retour au menu employé de l'hôtel.");
 		System.out.println(" ");
 	}
 
 	public void freeAnOccupiedRoom(Scanner in, String userChoice) {
-		boolean notFound = true;
+		boolean notFound = true; // De base le client n'est pas trouvé
 		String confirmation = "";
 		System.out.println(" ");
+		login(in); //  fonction qui boucle tant que l'employé n'a pas rentré le bon mot de passe
 		System.out.println(" ");
 		System.out.println("Entrer le loggin du client");
 		System.out.println(" ");
 		userChoice = in.next();
-		int reservationLeft = nbOfClientReservation(in, userChoice);
-		while(reservationLeft > 0) {
+		int reservationLeft = nbOfClientReservation(in, userChoice); // récupère le nombre de chambre occupé par le client
+		while(reservationLeft > 0) { // tant que la résa est supérieur à 0
 			for (int i = 0; i < hotel.length; i++) {
 				Customer customers[] = hotel[i].getCustomers();
 				LocalDate startDates[] = hotel[i].getStartDates();
 				LocalDate endDates[] = hotel[i].getEndDates();
 				for (int j = 0; j < customers.length; j++) {
-					if(customers[j] != null && customers[j].getLogin().equalsIgnoreCase(userChoice)) {
+					if(customers[j] != null && customers[j].getLogin().equalsIgnoreCase(userChoice)) { // si utilisateur correspond au loggin client
 						System.out.println(" ");
-						System.out.println(customers[j].getFirstName() + " " + customers[j].getLastName() + " a " + reservationLeft + " réservation(s).");
+						System.out.println(customers[j].getFirstName() + " " + customers[j].getLastName() + " a " + reservationLeft + " réservation(s)."); // Nombre de résa restante et affichage du nom et prénom du client 
 						System.out.println(" ");
-						System.out.println("Ce client a réservé une chambre du " + startDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)));
+						System.out.println("Ce client a réservé une chambre du " + startDates[j] + " au " + endDates[j]); // date de résa de la chambre
 						System.out.println(" ");
 						System.out.println("Confirmer le checkout de cette chambre :");
 						System.out.println("('C' pour confirmer le checkout, 'N' pour passer directement à la chambre suivante, 'Q' pour annuler le checkout.)");
 						confirmation = in.next();
-						if(confirmation.equalsIgnoreCase("c")) {
+						if(confirmation.equalsIgnoreCase("c")) { // permet de libérer la chambre
 							customers[j] = null;
 							startDates[j] = null;
 							endDates[j] = null;
 							reservationLeft--;
-							if(reservationLeft == 0) {
+							if(reservationLeft == 0) { // si le client n'a qu'un checkout à faire, passer le boolean à true
 								notFound = false;
 							} else {
 								System.out.println("La chambre" + i + " de type : " + hotel[i].getRoomType() + " a été libéré avec succès.");
 							}
 							break;
-						} else if (confirmation.equalsIgnoreCase("n")) {
-							if(reservationLeft == 1) {
+						} else if (confirmation.equalsIgnoreCase("n")) { // permet de passer à la résa suivante si le client ne souhaite pas checkout de cette chambre
+							if(reservationLeft == 1) {// empêche de passer à la chambre suivante s'il n'y en a pas d'autres.
 								System.out.println("Il n'y a pas d'autres chambres réservées pour ce client.");
 								System.out.println("Choisissez : ('C' pour confirmer le checkout, 'Q' pour annuler le checkout.)");
 								confirmation = in.next();
-								if(confirmation.equalsIgnoreCase("c")) {
+								if(confirmation.equalsIgnoreCase("c")) { // permet de libérer la chambre
 									customers[j] = null;
 									startDates[j] = null;
 									endDates[j] = null;
 									reservationLeft--;
-									if(reservationLeft == 0) {
+									if(reservationLeft == 0) { // si le client n'a qu'un checkout à faire, passer le boolean à false
 										notFound = false;
 									}
 									break;
-								} else if (confirmation.equalsIgnoreCase("q")) {
+								} else if (confirmation.equalsIgnoreCase("q")) { // permet d'arreter la fonction de checkout
 									reservationLeft = 0;
 									break;
 								}
-							} else {
-								i++;
-								notFound = false;
-								reservationLeft--;
+							} else { 
+								i++; // passe à la chambre suivante
+								notFound = false; // passe le boolean à false (le client a été trouvé)
+								reservationLeft--; // décrémente le nombre de chambre restante pour le client
 							}
 							break;
 						} else if (confirmation.equalsIgnoreCase("q")) {
@@ -696,7 +713,7 @@ public class hotelManagment {
 			System.out.println(" ");
 		}
 	}
-
+	
 	public int nbOfClientReservation(Scanner in, String userChoice) {
 		int nbOfClientReservation = 0;
 		for (int i = 0; i < hotel.length; i++) {
