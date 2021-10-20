@@ -13,15 +13,22 @@ import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.Address;
 import javax.mail.Authenticator;
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -195,7 +202,7 @@ public class hotelManagment {
 				if(customers[j] != null && startDates[j].isBefore(response.plusDays(1)) && endDates[j].isAfter(response.minusDays(1))) {
 					allFree = false;
 					count ++; // On incrémente un compteur
-					if(i == 64) {
+					if(i == hotel.length-1) {
 						System.out.println(count + " chambres réservées de type " + hotel[i].getRoomType());
 						break;
 					}
@@ -292,20 +299,22 @@ public class hotelManagment {
 			Customer customers[] = hotel[i].getCustomers();
 			LocalDate startDates[] = hotel[i].getStartDates();
 			LocalDate endDates[] = hotel[i].getEndDates();
-			
+			free = true;
 			for (int j = 0; j < customers.length; j++) {
 
 				// Si on rentre dans cette condition c'est que la chambre est occupée
 				if(customers[j] != null && startDates[j].isBefore(response.plusDays(1)) && endDates[j].isAfter(response.minusDays(1))) {
-					free = false;
+					free = false;		
 					break;
 				}
 			}
+			
+			
 			// Si on a bouclé sur les 3 clients et que la chambre n'est pas occupée alors on incremente count
 			if(free) {
 				allOccupied = false;
 				count ++;
-				if(i == 64) {
+				if(i == hotel.length-1) {
 					System.out.println(count + " chambres libre de type " + hotel[i].getRoomType());
 					break;
 				}
@@ -316,6 +325,7 @@ public class hotelManagment {
 				}
 			}
 		}
+		
 		if(allOccupied) {
 			System.out.println("Toutes les chambres sont occupées pour cette date");
 		}
@@ -334,9 +344,12 @@ public class hotelManagment {
 		System.out.println("Veuillez saisir la date de fin de la réservation que vous souhaitez annuler");
 		LocalDate endDate = askDate(in);
 		
+		System.out.println("Veuillez saisir le numéro de votre chambre");
+		int i = in.nextInt();
+		
 		boolean notFound = true;
 		
-		for (int i = 0; i < hotel.length; i++) {
+		
 			Customer customers[] = hotel[i].getCustomers();
 			LocalDate startDates[] = hotel[i].getStartDates();
 			LocalDate endDates[] = hotel[i].getEndDates();
@@ -347,14 +360,11 @@ public class hotelManagment {
 						startDates[j] = null;
 						endDates[j] = null;
 						notFound = false;
-						System.out.println("La réservation de " + lastName + " " + firstName + " du " +  startDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE))  + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " à bien été supprimée.");
+						System.out.println("La réservation de " + lastName + " " + firstName + " du " +  startDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE))  + " au " + endDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " à bien été supprimée.");
 						break;
 					}
 				}
-				if(!notFound) {
-					break;
-				}
-		}
+		
 		if(notFound) {
 			System.out.println("Pas de réservation correspondante");
 		}
@@ -590,7 +600,6 @@ public class hotelManagment {
 			System.out.println("-------------------------------");
 			userChoice = in.next();
 			fARBTIndex = firstAvailableRoomByType(in, currentDate, resaStart, resaEnd, userChoice); // Index de la 1ere chambre libre par type
-			System.out.println("fARBTIndex = " + fARBTIndex);
 			Customer fARBTCustomers[] = hotel[fARBTIndex].getCustomers(); // initialisation d'un nouveau client
 			LocalDate fARBTStartingDate[] = hotel[fARBTIndex].getStartDates(); // initialisation d'un nouveau début de date de résa 
 			LocalDate fARBTEndingDate[] = hotel[fARBTIndex].getEndDates(); // initialisation d'une nouvelle fin de date se résa
@@ -804,6 +813,8 @@ public class hotelManagment {
 	public void mail(String mail) throws MessagingException {
 		Credentials credentials = new Credentials();
 		Properties properties = new Properties();
+		String from = credentials.getLogin();
+		String to = "wldblm@icloud.com";
 		
 		properties.put("mail.smtp.auth", true);
 		properties.put("mail.smtp.host", "smtp.gmail.com");
@@ -819,9 +830,27 @@ public class hotelManagment {
 		Message message = new MimeMessage(session);
 		message.setSubject("Confirmation de réservation");
 		message.setContent("<h1> Votre facture </h1>", "text/html");
+		message.setFrom(new InternetAddress(from));
 		
-		Address addressTo = new InternetAddress("youremail@gmail.com");
-		message.setRecipient(Message.RecipientType.TO, addressTo);
+		 message.setRecipients(Message.RecipientType.TO,
+		            InternetAddress.parse(to));
+		
+		BodyPart messageBodyPart = new MimeBodyPart();
+		 messageBodyPart.setText("Bonjour, voici votre facture concernant votre reservation de chambre d'hotel");
+		 
+		Multipart multipart = new MimeMultipart();
+		multipart.addBodyPart(messageBodyPart);
+		
+		messageBodyPart = new MimeBodyPart();
+		String filename = "factureHotel.pdf";
+		DataSource source = new FileDataSource(filename);
+		
+		messageBodyPart.setDataHandler(new DataHandler(source));
+		messageBodyPart.setFileName(filename);
+		
+		multipart.addBodyPart(messageBodyPart);
+		message.setContent(multipart);
+		
 		
 		Transport.send(message);
 	}
