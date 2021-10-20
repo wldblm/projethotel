@@ -826,19 +826,19 @@ public class hotelManagment {
 		document.add(par);
 		
 		
-		Paragraph par1 = new Paragraph(new Chunk("Séjour du : date d'arrivé" , FontFactory.getFont(FontFactory.COURIER, 13)));
+		Paragraph par1 = new Paragraph(new Chunk("Séjour du : " + startDate , FontFactory.getFont(FontFactory.COURIER, 13)));
 		document.add(par1);
 		
 		
-		Paragraph par2 = new Paragraph(new Chunk("au : date de fin" , FontFactory.getFont(FontFactory.COURIER, 13)));
+		Paragraph par2 = new Paragraph(new Chunk("au : date de fin " + endDate , FontFactory.getFont(FontFactory.COURIER, 13)));
 		document.add(par2);
 	
 		
-		Paragraph par3 = new Paragraph(new Chunk("                                       facture numéro : 1234" , FontFactory.getFont(FontFactory.COURIER, 13)));
+		Paragraph par3 = new Paragraph(new Chunk("                                       Facture numéro : 1234" , FontFactory.getFont(FontFactory.COURIER, 13)));
 		document.add(par3);
 		
 		
-		Paragraph par4 = new Paragraph(new Chunk("Nom Prénom                             Editée le : date.now" , FontFactory.getFont(FontFactory.COURIER, 13)));
+		Paragraph par4 = new Paragraph(new Chunk(lastName + " " + firstName + "                             Editée le : " + LocalDate.now().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) , FontFactory.getFont(FontFactory.COURIER, 13)));
 		document.add(par4);
 		document.add(Chunk.NEWLINE);
 		
