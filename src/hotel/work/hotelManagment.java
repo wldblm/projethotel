@@ -41,7 +41,7 @@ public class hotelManagment {
 	
 	private Room hotel[];
 	
-	public hotelManagment() {
+	public hotelManagment() throws MalformedURLException, DocumentException, IOException {
 		hotel = generate();
 		Scanner in = new Scanner(System.in);
 		String userChoice = "";
@@ -517,7 +517,7 @@ public class hotelManagment {
 		}
 	}
 
-	public void doAReservation(Scanner in, String userChoice) {
+	public void doAReservation(Scanner in, String userChoice) throws MalformedURLException, DocumentException, IOException {
 		LocalDate currentDate = LocalDate.now(); // date d'aujourd'hui
 		System.out.println("Date du début de la réservation :");
 		LocalDate resaStart = askDate(in);
@@ -616,12 +616,14 @@ public class hotelManagment {
 			System.out.println(hotel[reservationBedrooms[i]].getRoomType() + " numéro " + reservationBedrooms[i] + ". Pour un prix de : " + hotel[reservationBedrooms[i]].getPrice() + "€.");
 			total = total + Integer.parseInt(hotel[reservationBedrooms[i]].getPrice());
 		}
+		bill(firstName, lastName, resaStart, resaEnd, total, reservationBedrooms);
 		System.out.println("Le reste à payer de " + total + ".");
 		System.out.println(" ");
 		System.out.println("Retour au menu employé de l'hôtel.");
 		System.out.println(" ");
 	}
 
+	
 	public void freeAnOccupiedRoom(Scanner in, String userChoice) {
 		boolean notFound = true; // De base le client n'est pas trouvé
 		String confirmation = "";
@@ -826,7 +828,7 @@ public class hotelManagment {
 	
 	public void bill(String firstName, String lastName, LocalDate startDate,LocalDate endDate,int total, int tab[]) throws DocumentException, MalformedURLException, IOException {
 		Document document  = new Document();
-		PdfWriter.getInstance(document, new FileOutputStream("bill.pdf"));
+		PdfWriter.getInstance(document, new FileOutputStream("factureHotel.pdf"));
 		document.open();
 		
 		Paragraph titre = new Paragraph(new Chunk("Hotel WalAmy" , FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20)));
