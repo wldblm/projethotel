@@ -2,10 +2,13 @@ package hotel.work;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import java.net.MalformedURLException;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Scanner;
@@ -37,7 +40,9 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import hotel.customers.Customer;
+
 import hotel.rooms.Room;
+
 import utils.Credentials;
 
 
@@ -49,7 +54,7 @@ public class hotelManagment {
 		hotel = generate();
 		Scanner in = new Scanner(System.in);
 		String userChoice = "";
-		String employeLoggin = "emLog";		
+		String employeLoggin = "emLog";
 		System.out.println("Entrez votre identifiant pour vous connecter ou connaitre les détails de votre réservation :");
 		while(true) { // boucle sur l'identification
 			userChoice = in.next();
@@ -810,16 +815,25 @@ public class hotelManagment {
 			}
 		}
 	}
-	
+
 	public void login(Scanner in) {
 		System.out.println("Veuillez saisir votre mot de passe");
 		String response = in.next();
-		while(!response.equals("password")) {
-			System.out.println("Mot de passe érroné veuillez ressayer");
-			response = in.next();
+		boolean validation = false;
+		while(validation == false) {
+			for (int i = 2; i < 5; i++) {
+				if(!response.startsWith("GH") || response.charAt(i) < 48 || response.charAt(i) > 57) {
+					System.out.println("Mot de passe érroné veuillez ressayer");
+					response = in.next();
+					break;
+				}
+				else {
+					validation = true;
+				}
+			}
 		}
 	}
-	
+
 	public void mail(String mail, String firstName, String lastName, String login) throws MessagingException {
 		Credentials credentials = new Credentials();
 		Properties properties = new Properties();
