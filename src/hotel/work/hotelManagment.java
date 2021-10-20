@@ -281,7 +281,6 @@ public class hotelManagment {
 		}
 	}
 	
-	
 	public void getFreeRooms(Scanner in) {
 		// On recupère la date à laquelle on veut afficher les chambres libre;
 		LocalDate response = askDate(in);
@@ -418,8 +417,7 @@ public class hotelManagment {
 		
 		}}
 	}
-	
-	
+		
 	public LocalDate askDate(Scanner in) {
 		System.out.println("Insérer l'année ");
 		String year = in.next();
@@ -628,8 +626,6 @@ public class hotelManagment {
 		boolean notFound = true; // De base le client n'est pas trouvé
 		String confirmation = "";
 		System.out.println(" ");
-		login(in); //  fonction qui boucle tant que l'employé n'a pas rentré le bon mot de passe
-		System.out.println(" ");
 		System.out.println("Entrer le loggin du client");
 		System.out.println(" ");
 		userChoice = in.next();
@@ -793,8 +789,7 @@ public class hotelManagment {
 			}
 		}
 	}
-
-	// Login employé	
+	
 	public void login(Scanner in) {
 		System.out.println("Veuillez saisir votre mot de passe");
 		String response = in.next();
@@ -803,6 +798,7 @@ public class hotelManagment {
 			response = in.next();
 		}
 	}
+	
 	public void mail(String mail) throws MessagingException {
 		Credentials credentials = new Credentials();
 		Properties properties = new Properties();
@@ -891,6 +887,5 @@ public class hotelManagment {
 		document.add(price);
 		document.close();
 	}
-	
 	
 }
