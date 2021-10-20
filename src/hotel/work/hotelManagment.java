@@ -405,7 +405,7 @@ public class hotelManagment {
 						}
 						endDates[j] = endDate;
 						notFound = false;
-						System.out.println("La réservation de   " + lastName + " " + firstName + " à bien été modifié du " +  startDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE))  + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)));
+						System.out.println("La réservation de   " + lastName + " " + firstName + " à bien été modifié du " +  startDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE))  + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)));
 						break;
 					}
 				}
@@ -452,7 +452,7 @@ public class hotelManagment {
 				selection = "2";
 			} else if (hotel[i].getRoomType().equals("Chambre Vue Océan")) {
 				selection = "3";
-			} else if (hotel[i].getRoomType().equals("Chambre Vue imprenable sur l'océan")) {
+			} else if (hotel[i].getRoomType().equals("Chambre vue imprenable sur l'océan")) {
 				selection = "4";
 			} else if (hotel[i].getRoomType().equals("Suite CDA")) {
 				selection = "5";
@@ -520,7 +520,7 @@ public class hotelManagment {
 	}
 
 	public void doAReservation(Scanner in, String userChoice) {
-		login(in);
+		
 		
 		LocalDate currentDate = LocalDate.now(); // date d'aujourd'hui
 		System.out.println("Date du début de la réservation :");
@@ -760,7 +760,7 @@ public class hotelManagment {
 					clientFound = true;
 					if(userResaCount == 0) {
 						System.out.println(customers[l].getFirstName() + " " + customers[l].getLastName() +  ". Identifiant client : " + customers[l].getLogin());
-						System.out.println("Les dates de réservation pour ce bien vont du " + startDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[l].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + ".");
+						System.out.println("Les dates de réservation pour ce bien vont du " + startDates[l].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[l].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + ".");
 						System.out.println("Voici la liste des chambres qu'il a réservé :");
 						System.out.println(hotel[k].getRoomType() + " au numéro " + k + ".");
 						userResaCount++;
@@ -806,7 +806,7 @@ public class hotelManagment {
 		message.setSubject("Confirmation de réservation");
 		message.setContent("<h1> Votre facture </h1>", "text/html");
 		
-		Address addressTo = new InternetAddress("wldblm@icloud.com");
+		Address addressTo = new InternetAddress("youremail@gmail.com");
 		message.setRecipient(Message.RecipientType.TO, addressTo);
 		
 		Transport.send(message);
