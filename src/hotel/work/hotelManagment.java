@@ -168,7 +168,7 @@ public class hotelManagment {
 			for (int j = 0; j < customers.length; j++) {
 				if(customers[j] != null && startDates[j].isBefore(response.plusDays(1)) && endDates[j].isAfter(response.minusDays(1))) {
 					isFree = false;
-					System.out.println("La chambre " + i + " de type " + hotel[i].getRoomType() + " est occupé par " + customers[j].getFirstName() + " " + customers[j].getLastName() + " du " + startDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)));
+					System.out.println("La chambre " + i + " de type " + hotel[i].getRoomType() + " est occupé par " + customers[j].getFirstName() + " " + customers[j].getLastName() + " du " + startDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)));
 				}
 				
 			}
@@ -348,7 +348,7 @@ public class hotelManagment {
 						startDates[j] = null;
 						endDates[j] = null;
 						notFound = false;
-						System.out.println("La réservation de " + lastName + " " + firstName + " du " +  startDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE))  + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " à bien été supprimée.");
+						System.out.println("La réservation de " + lastName + " " + firstName + " du " +  startDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE))  + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " à bien été supprimée.");
 						break;
 					}
 				}
@@ -628,7 +628,7 @@ public class hotelManagment {
 						System.out.println(" ");
 						System.out.println(customers[j].getFirstName() + " " + customers[j].getLastName() + " a " + reservationLeft + " réservation(s).");
 						System.out.println(" ");
-						System.out.println("Ce client a réservé une chambre du " + startDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)));
+						System.out.println("Ce client a réservé une chambre du " + startDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[j].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)));
 						System.out.println(" ");
 						System.out.println("Confirmer le checkout de cette chambre :");
 						System.out.println("('C' pour confirmer le checkout, 'N' pour passer directement à la chambre suivante, 'Q' pour annuler le checkout.)");
@@ -722,11 +722,11 @@ public class hotelManagment {
 					clientFound = true;
 					if(userResaCount == 0) {
 						System.out.println("Bienvenue " + customers[l].getFirstName() + " " + customers[l].getLastName() +  ".");
-						System.out.println("Vous avez réservé la chambre : " + hotel[k].getRoomType() + " au num�ro " + k + ". Vos dates de réservation pour ce bien vont du " + startDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + ".");
+						System.out.println("Vous avez réservé la chambre : " + hotel[k].getRoomType() + " au num�ro " + k + ". Vos dates de réservation pour ce bien vont du " + startDates[l].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[l].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + ".");
 						userResaCount++;
 					}
 					else {
-						System.out.println("Vous avez aussi réservé la chambre : " + hotel[k].getRoomType() + " au numéro " + k + ". Vos dates de réservation pour ce bien vont du " + startDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + ".");
+						System.out.println("Vous avez aussi réservé la chambre : " + hotel[k].getRoomType() + " au numéro " + k + ". Vos dates de réservation pour ce bien vont du " + startDates[l].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[l].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + ".");
 					}
 				}
 				else {
@@ -760,7 +760,7 @@ public class hotelManagment {
 					clientFound = true;
 					if(userResaCount == 0) {
 						System.out.println(customers[l].getFirstName() + " " + customers[l].getLastName() +  ". Identifiant client : " + customers[l].getLogin());
-						System.out.println("Les dates de réservation pour ce bien vont du " + startDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + ".");
+						System.out.println("Les dates de réservation pour ce bien vont du " + startDates[l].format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)) + " au " + endDates[l].format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)) + ".");
 						System.out.println("Voici la liste des chambres qu'il a réservé :");
 						System.out.println(hotel[k].getRoomType() + " au numéro " + k + ".");
 						userResaCount++;
@@ -858,8 +858,8 @@ public class hotelManagment {
 				for (int j = 0; j < customers.length; j++) {
 					// si les info de la personne qui a reservé correspondent aux info de la chambre j'affiche dans la facture 
 					if(customers[j] != null && firstName.equals(customers[j].getFirstName()) && lastName.equals(customers[j].getLastName())&& startDate.equals(startDates[j]) && endDate.equals(endDates[j])) {
-						table.addCell(startDate.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)));
-						table.addCell(endDate.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.FRANCE)));
+						table.addCell(startDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)));
+						table.addCell(endDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.FRANCE)));
 						table.addCell(hotel[tab[i]].getRoomType());
 						table.addCell(hotel[tab[i]].getPrice());
 					}
