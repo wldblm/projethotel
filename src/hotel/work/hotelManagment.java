@@ -48,7 +48,7 @@ public class hotelManagment {
 	
 	private Room hotel[];
 	
-	public hotelManagment() throws MalformedURLException, DocumentException, IOException {
+	public hotelManagment() throws MalformedURLException, DocumentException, IOException, MessagingException {
 		hotel = generate();
 		Scanner in = new Scanner(System.in);
 		String userChoice = "";
@@ -527,12 +527,14 @@ public class hotelManagment {
 		}
 	}
 
-	public void doAReservation(Scanner in, String userChoice) throws MalformedURLException, DocumentException, IOException {
+	public void doAReservation(Scanner in, String userChoice) throws MalformedURLException, DocumentException, IOException, MessagingException {
 		LocalDate currentDate = LocalDate.now(); // date d'aujourd'hui
 		System.out.println("Date du début de la réservation :");
 		LocalDate resaStart = askDate(in);
 		System.out.println("Date de fin de la réservation :");
 		LocalDate resaEnd = askDate(in);
+		String mail = "";
+		String login = "";
 		// vérifie que le début de la résa n'est pas après la date de fin et le tout n'est pas avant aujourd'hui.
 		while((resaEnd.isBefore(resaStart)) || (resaStart.isBefore(currentDate)) || (resaEnd.isBefore(currentDate))) { 
 			System.out.println("Veuillez entrer une date de fin de réservation ultérieur à celle de début et à la date d'aujourd'hui.");
@@ -606,6 +608,7 @@ public class hotelManagment {
 			for (int i = 0; i < 3; i++) {
 				if(fARBTCustomers[i] == null) { // si l'emplacement de résa est libre...
 					fARBTCustomers[i] = new Customer(firstName, lastName);
+					login = fARBTCustomers[i].getLogin();
 					fARBTStartingDate[i] = resaStart;
 					fARBTEndingDate[i] = resaEnd;
 					break;
@@ -628,6 +631,9 @@ public class hotelManagment {
 		bill(firstName, lastName, resaStart, resaEnd, total, reservationBedrooms);
 		System.out.println("Le reste à payer de " + total + ".");
 		System.out.println(" ");
+		System.out.println("Veuillez saisir votre mail pour recevoir votre facture par email");
+		mail = in.next();
+		mail(mail, firstName, lastName, login);
 		System.out.println("Retour au menu employé de l'hôtel.");
 		System.out.println(" ");
 	}
@@ -810,11 +816,11 @@ public class hotelManagment {
 		}
 	}
 	
-	public void mail(String mail) throws MessagingException {
+	public void mail(String mail, String firstName, String lastName, String login) throws MessagingException {
 		Credentials credentials = new Credentials();
 		Properties properties = new Properties();
 		String from = credentials.getLogin();
-		String to = "wldblm@icloud.com";
+		String to = mail;
 		
 		properties.put("mail.smtp.auth", true);
 		properties.put("mail.smtp.host", "smtp.gmail.com");
@@ -836,7 +842,7 @@ public class hotelManagment {
 		            InternetAddress.parse(to));
 		
 		BodyPart messageBodyPart = new MimeBodyPart();
-		 messageBodyPart.setText("Bonjour, voici votre facture concernant votre reservation de chambre d'hotel");
+		 messageBodyPart.setText("Bonjour " + firstName + " " + lastName + ", voici votre facture concernant votre réservation chez Wamy hotels. Votre identifiant est " + login );
 		 
 		Multipart multipart = new MimeMultipart();
 		multipart.addBodyPart(messageBodyPart);
@@ -853,6 +859,7 @@ public class hotelManagment {
 		
 		
 		Transport.send(message);
+
 	}
 	
 	public void bill(String firstName, String lastName, LocalDate startDate,LocalDate endDate,int total, int tab[]) throws DocumentException, MalformedURLException, IOException {
